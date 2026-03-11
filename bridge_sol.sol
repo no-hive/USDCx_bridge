@@ -10,29 +10,28 @@ interface IERC20 {
 contract Bridge_sol {
 
 constructor(uint256 _own_balance, uint256 _external_balance){
-    own_balance = _own_balance
-    external_balance = _external_balance
-    start_balance = _external_balance + _own_balance
+    own_balance = _own_balance;
+    external_balance = _external_balance;
+    start_balance = _external_balance + _own_balance;
 }
 
 // keeps the balance of both contracts + their sum
-uint256 public own_balance
-uint256 public external_balance
-uint256 public start_balance
+uint256 public own_balance;
+uint256 public external_balance;
+uint256 public start_balance;
 
 // function user initialise to create a bridge transfer request.
-function BridgeRequest {address sender, uint256 amount, string memory receiver}
+function BridgeRequest (uint256 amount, string memory receiver) internal {
     require(external_balance > amount , "no funds on other blockchain");
     // in the future here will be an extra action that will 
     // return money to the user if there are not enough funds
 
-external_balance =- amount;
+external_balance -= amount;
 
-own_balance =+ amount;
+own_balance += amount;
 
-if own_balance + external_balance == start_balance
-emit Request_Approved(msg.sender, amount, receiver)
-
+emit Request_Approved(msg.sender, amount, receiver);
+}
 
 // use this function to send token to the contract. then it starts the bridge request.
 function deposit(address token, uint256 amount, string memory receiver) external {
@@ -41,10 +40,11 @@ function deposit(address token, uint256 amount, string memory receiver) external
         bool success = IERC20(token).transferFrom(msg.sender, address(this), amount);
         require(success, "transferFrom failed");
 
-        BridgeRequest (msg.sender, amount, receiver)
+        BridgeRequest (amount, receiver);
 
 }
 
 //event
 
-event Request_Approved(address msg.sender, uint256 amount, string memory receiver);
+event Request_Approved(address indexed sender, uint256 amount, string receiver);
+}
