@@ -62,5 +62,5 @@ contract Bridge_sol {
      * function to complete the trasfer on another blockchain
      * This event is triggered when the `BridgeRequest` function is called.
      */
-    event Request_Approved(address indexed sender, uint256 amount, string receiver);
+    event Request_Approved(address indexed sender, uint256 amount, string receiver, uint256 nonce);
 }
