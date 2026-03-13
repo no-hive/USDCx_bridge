@@ -42,7 +42,7 @@ contract Bridge_sol {
          */
         external_balance -= amount;
         own_balance += amount;
-        emit Request_Approved(msg.sender, amount, receiver);
+        emit Request_Approved(msg.sender, amount, receiver, none);
     }
 
     /**
