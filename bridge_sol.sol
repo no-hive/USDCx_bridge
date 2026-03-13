@@ -23,12 +23,14 @@ contract Bridge_sol {
         own_balance = _own_balance;
         external_balance = _external_balance;
         start_balance = _external_balance + _own_balance;
+        nonce = 0;
     }
 
     // Keeps the balance of both contracts
     uint256 public own_balance;
     uint256 public external_balance;
     uint256 public start_balance;
+    uint256 public nonce;
 
     /**
      * Handles the check of bridge contracts balances.
@@ -42,7 +44,8 @@ contract Bridge_sol {
          */
         external_balance -= amount;
         own_balance += amount;
-        emit Request_Approved(msg.sender, amount, receiver, none);
+        emit Request_Approved(msg.sender, amount, receiver, nonce);
+        nonce += 1;
     }
 
     /**
