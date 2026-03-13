@@ -3,10 +3,20 @@
 pragma solidity ^0.8.24;
 
 interface IERC20 {
-    // function transfer(address to, uint256 value) external returns (bool);
+    /**
+     * Transfers `amount` tokens from `sender` to `recipient`.
+     * This function is used to transfer USDC tokens from user
+     * wallet to smart contract balance. 
+     */
     function transferFrom(address from, address to, uint256 value) external returns (bool);
 }
 
+    /**
+     * @title Simple USDC Stacks-Base Bridge
+     * @author no-hive
+     * This contract is for testing purposes only.
+     * Production version must use SafeTransfer.
+     */
 contract Bridge_sol {
 
     constructor(uint256 _own_balance, uint256 _external_balance){
@@ -15,36 +25,42 @@ contract Bridge_sol {
         start_balance = _external_balance + _own_balance;
     }
 
-    // keeps the balance of both contracts + their sum
+    // Keeps the balance of both contracts
     uint256 public own_balance;
     uint256 public external_balance;
     uint256 public start_balance;
 
-    // function user initialise to create a bridge transfer request.
+    /**
+     * Handles the check of bridge contracts balances.
+     * This function is called internally to manage the transfer process.
+     */
     function BridgeRequest (uint256 amount, string memory receiver) internal {
         require(external_balance > amount , "no funds on other blockchain");
-        // in the future here will be an extra action that will
-        // return money to the user if there are not enough funds
-
+        /**
+         * In the future here will be an extra action that will
+         * return money to the user if there are not enough funds
+         */
         external_balance -= amount;
-
         own_balance += amount;
-
         emit Request_Approved(msg.sender, amount, receiver);
     }
 
-    // use this function to send token to the contract. then it starts the bridge request.
+    /**
+     * Deposits tokens into the bridge contract.
+     * This function is used to initiate a transfer of tokens from the 
+     * current chain to another chain.
+     */
     function deposit(address token, uint256 amount, string memory receiver) external {
         require(amount > 0, "amount = 0");
-
         bool success = IERC20(token).transferFrom(msg.sender, address(this), amount);
         require(success, "transferFrom failed");
-
         BridgeRequest (amount, receiver);
-
     }
-
-    //event
-
+    
+    /**
+     * Is used as a signal for off-chain nodes to call a 
+     * function to complete the trasfer on another blockchain
+     * This event is triggered when the `BridgeRequest` function is called.
+     */
     event Request_Approved(address indexed sender, uint256 amount, string receiver);
 }
