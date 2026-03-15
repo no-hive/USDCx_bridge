@@ -6,23 +6,26 @@ interface IERC20 {
     /**
      * Transfers `amount` tokens from `sender` to `recipient`.
      * This function is used to transfer USDC tokens from user
-     * wallet to smart contract balance. 
+     * wallet to smart contract balance.
      */
     function transferFrom(address from, address to, uint256 value) external returns (bool);
+    function transfer(address recipient, uint256 amount) external returns (bool);
 }
 
-    /**
-     * @title Simple USDC Stacks-Base Bridge
-     * @author no-hive
-     * This contract is for testing purposes only.
-     * Production version must use SafeTransfer.
-     */
+/**
+ * @title Simple USDC Stacks-Base Bridge
+ * @author no-hive
+ * This contract is for testing purposes only.
+ * Production version must use SafeTransfer.
+ */
 contract Bridge_sol {
 
-    constructor(uint256 _own_balance, uint256 _external_balance){
+    constructor(uint256 _own_balance, uint256 _external_balance, address _token, address _multisig_contract){
         own_balance = _own_balance;
         external_balance = _external_balance;
         start_balance = _external_balance + _own_balance;
+        token = _token;
+        multisig_contract = _multisig_contract;
         nonce = 0;
     }
 
@@ -31,6 +34,8 @@ contract Bridge_sol {
     uint256 public external_balance;
     uint256 public start_balance;
     uint256 public nonce;
+    address public multisig_contract;
+    address public token;
 
     /**
      * Handles the check of bridge contracts balances.
@@ -50,18 +55,24 @@ contract Bridge_sol {
 
     /**
      * Deposits tokens into the bridge contract.
-     * This function is used to initiate a transfer of tokens from the 
+     * This function is used to initiate a transfer of tokens from the
      * current chain to another chain.
      */
-    function deposit(address token, uint256 amount, string memory receiver) external {
+    function Deposit(uint256 amount, string memory receiver) external {
         require(amount > 0, "amount = 0");
         bool success = IERC20(token).transferFrom(msg.sender, address(this), amount);
         require(success, "transferFrom failed");
         BridgeRequest (amount, receiver);
     }
-    
+
+    function Transfer(address recipient, uint256 amount) external {
+        require (multisig_contract == msg.sender, "no rights to do so");
+        bool success = IERC20(token).transfer(recipient, amount);
+        require(success, "transfer failed");
+    }
+
     /**
-     * Is used as a signal for off-chain nodes to call a 
+     * Is used as a signal for off-chain nodes to call a
      * function to complete the trasfer on another blockchain
      * This event is triggered when the `BridgeRequest` function is called.
      */
