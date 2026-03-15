@@ -89,7 +89,7 @@ contract FederationSync {
             req.node_2_confirmation = true;
             req.node_2_recipient    = recipient;
             req.node_2_amount       = amount;
-        } else if (msg.sender == federation_node_2) {
+        } else if (msg.sender == federation_node_3) {
             require(!req.node_3_confirmation, "Node 3 already confirmed");
             req.node_3_confirmation = true;
             req.node_3_recipient    = recipient;
