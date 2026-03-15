@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.20;
+pragma solidity ^0.8.32;
 
 /**
  * Interface of Bridge_sol deployed on this chain.
